@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:jobaiassitant/user.model.dart';
 import 'package:http/http.dart' as http;
+import 'package:jobaiassitant/utilites/constants.dart';
 import 'package:jobaiassitant/utilites/utility.dart';
 
 class ResumeUploader extends StatefulWidget {
@@ -47,11 +48,9 @@ class _ResumeUploaderState extends State<ResumeUploader> {
         'content': base64String, // Add Base64 string to your data
       };
 
-      String apiUrl =
-          'http://128.4.118.79:5000/upload/pdf'; // Replace with your MongoDB API URL
-
       var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
-      var url = Uri.parse('http://128.4.118.79:5000/upload/pdf');
+      var constUrl = Constants.docUrl;
+      var url = Uri.parse('$constUrl/upload/pdf');
 
       var body = {"pdf_data": base64String};
 

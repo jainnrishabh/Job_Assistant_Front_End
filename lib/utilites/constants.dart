@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 class Constants {
   static final pageSize = 10;
   // static String baseUrl = 'http://192.168.0.120:3000';
-  static String baseUrl = 'http://128.4.118.79:5000/api/data';
+  static String mahadevDoc = 'http://128.4.126.32:8000';
+  static String docUrl = 'http://128.4.118.79:5000';
   static final String appVersion = 'v2.0.5';
   static String listEndMessage = 'It looks like you\'ve reached the end';
   static BaseOptions networkOptions = BaseOptions(
-    baseUrl: baseUrl,
+    baseUrl: 'http://128.4.126.32:8000',
     connectTimeout: Duration(milliseconds: 150000),
     receiveTimeout: Duration(milliseconds: 100000),
   );

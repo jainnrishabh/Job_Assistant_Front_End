@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jobaiassitant/utilites/constants.dart';
 import 'package:jobaiassitant/utilites/utility.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -101,7 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
         'Content-Type': 'application/json'
       };
-      var url = Uri.parse('http://128.4.118.79:5000/login');
+      var constUrl = Constants.docUrl;
+      var url = Uri.parse('$constUrl/login');
 
       var body = {"email": email, "password": password};
 

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:jobaiassitant/job.model.dart';
 import 'package:jobaiassitant/user.model.dart';
+import 'package:jobaiassitant/utilites/constants.dart';
 import 'package:jobaiassitant/utilites/utility.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +14,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   bool isLoading = true;
+  List<JobModel> jobs = [];
   User userData = User(
     email: '',
     password: '',
@@ -58,7 +61,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)'
       };
-      var url = Uri.parse('http://128.4.118.79:5000/api/data/$cookies');
+
+      var constUrl = Constants.docUrl;
+
+      var url = Uri.parse('$constUrl/api/data/$cookies');
 
       var req = http.Request('GET', url);
       req.headers.addAll(headersList);
@@ -69,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       User user = User.fromJson(jsonDecode(resBody));
       userData = user;
 
-      isLoading = false;
+      getJobData(userData.resumes[0]['fileId']);
 
       setState(() {});
     } on Exception catch (e) {
@@ -84,6 +90,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // } else {
     //   print(res.reasonPhrase);
     // }
+  }
+
+  getJobData(resume) async {
+    try {
+      var headersList = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+      };
+
+      var url = Uri.parse('http://128.4.126.32:8000/$resume');
+      var req = http.Request('GET', url);
+      req.headers.addAll(headersList);
+
+      var res = await req.send();
+      final resBody = await res.stream.bytesToString();
+
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        final jsonData = jsonDecode(resBody);
+
+        // Parsing job data to WalmartJob model
+
+        for (var jobJson in jsonData) {
+          jobs.add(JobModel.fromJson(jobJson));
+        }
+
+        isLoading = false;
+        setState(() {});
+      } else {
+        isLoading = false;
+
+        setState(() {});
+        print(res.reasonPhrase);
+      }
+    } on Exception catch (e) {
+      isLoading = false;
+
+      setState(() {});
+      print(e);
+    }
   }
 
   @override
@@ -105,9 +150,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: CircularProgressIndicator(),
             )
           : ListView.builder(
-              itemCount: 2,
+              itemCount: jobs.length,
               itemBuilder: (context, index) {
-                return jobDetailsTile(userData.resumes);
+                return jobDetailsTile(jobs[index], userData.resumes, context);
               },
             ),
     );
@@ -121,8 +166,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  jobDetailsTile(resumes) {
-    print(resumes);
+  jobDetailsTile(job, resumes, context) {
+    bool _expanded = false;
     return Card(
       margin: EdgeInsets.all(10),
       elevation: 4,
@@ -132,35 +177,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Position name: Software Engineer',
+              'Position name: ${job.title}',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
-            Text('Company: Actalent'),
+            Text('Company: ${job.company}'),
             SizedBox(height: 4),
-            Text(
-                'Position type: Business Development, Business Information Systems, Late Stage'),
+            Text('Place: ${job.location}'),
             SizedBox(height: 4),
-            Text('Place: Ellington, CT'),
-            SizedBox(height: 4),
-            Text('Seniority: Entry, Mid Level'),
-            SizedBox(height: 4),
-            Text('Full-time'),
-            SizedBox(height: 4),
-            Text(
-              'Job Desc: Actalent is a global leader in engineering and sciences services seeking a Software Engineer to join a world-leading device manufacturing team. The role involves developing and troubleshooting robust Build Systems for Android and Linux platforms, collaborating with team members, and ensuring seamless build outcomes.',
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+              child: AnimatedCrossFade(
+                duration: Duration(milliseconds: 300),
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                firstChild: Text(
+                  'Job Desc: ${job.description.substring(0, 100)}...',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                secondChild: Text(
+                  'Job Desc: ${job.description}',
+                ),
+              ),
             ),
             SizedBox(height: 4),
-            Text('Match: 100%'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Match: ${job.matchScore.toStringAsFixed(2)}%'),
+                Text('Posted On: ${job.postedOn}'),
+              ],
+            ),
             SizedBox(height: 4),
-            Text('Experience Level: 1-2 years'),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  _apply(context, resumes);
-                },
-                child: Text('Apply'),
-              ),
+            ElevatedButton(
+              onPressed: () {
+                _apply(context, resumes);
+              },
+              child: Text('Apply'),
             ),
           ],
         ),

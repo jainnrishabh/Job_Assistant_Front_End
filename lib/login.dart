@@ -22,9 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
         child: Form(
@@ -32,6 +29,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text(
+                'Welcome',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -74,6 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
                 onPressed: () => _login(context),
                 child: Text('Login'),
               ),
@@ -120,6 +127,11 @@ class _LoginScreenState extends State<LoginScreen> {
         await Utility.storeCookie('userId', insertedId);
 
         Navigator.pushReplacementNamed(context, '/dashboard');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Successful'),
+          ),
+        );
         // Handle successful login, navigate to dashboard or perform other actions
       } else {
         showDialog(

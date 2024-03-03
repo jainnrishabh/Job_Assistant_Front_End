@@ -134,10 +134,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isLoading ? Color(0xffc62804) : Colors.white,
       appBar: AppBar(
+        title: Text('Job Assistant Dashboard'),
+        backgroundColor: isLoading ? Color(0xffc62804) : Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {
               // Perform signout logic
               _signout(context);
@@ -147,8 +150,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       body: isLoading
           ? Center(
-              child: CircularProgressIndicator(),
-            )
+              child: Image.network(
+              "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzliMzJoMGkwcGZlNXE2cXF2MGIzaXdobjI4MjBwYTlmbjdyN25meCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/RiykPw9tgdOylwFgUe/giphy.gif",
+              width: 200,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.error);
+              },
+            ))
           : ListView.builder(
               itemCount: jobs.length,
               itemBuilder: (context, index) {
@@ -242,6 +252,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // Apply with the selected resume logic
                   // Here, you can use 'resumes[index]' to access the selected resume data
                   Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Applied with Resume ${index + 1}'),
+                    ),
+                  );
                 },
               );
             }),

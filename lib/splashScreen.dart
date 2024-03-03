@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jobaiassitant/utilites/utility.dart';
 
@@ -31,18 +33,36 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigateToLogin() {
-    Navigator.pushReplacementNamed(context, '/login');
+    Timer(Duration(seconds: 3), () {
+      // Navigate to the next screen after the delay
+      Navigator.pushReplacementNamed(context, '/login');
+    });
   }
 
   void _navigateToDashboard() {
-    Navigator.pushReplacementNamed(context, '/dashboard');
+    Timer(Duration(seconds: 3), () {
+      // Navigate to the next screen after the delay
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Welcome Back !!'),
+      ),
+    );
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue,
       body: Center(
-        child: CircularProgressIndicator(), // Show a loading indicator
+        child: Text(
+          'Welcome to Smart Apply',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
